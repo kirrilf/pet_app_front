@@ -6,9 +6,19 @@
 </template>
 
 <script>
+
+function getIndex(list, id) {
+  for (let i = 0; i < list.length; i++) {
+    if (list[i].id === id) {
+      return i
+    }
+  }
+  return -1
+}
+
 export default {
   props: ['messages', 'messageAttr'],
-  data:()=>({
+  data: () => ({
     text: '',
     id: ''
   }),
@@ -19,12 +29,20 @@ export default {
     }
   },
   methods: {
-    save() {
-      const message = {text: this.text}
+    async save() {
+      const post = {text: this.text}
       if (this.id) {
-       //update
+        post.id = this.id
+        let data = await this.$store.dispatch('updatePost', post)
+        const index = getIndex(this.messages, data.id)
+        this.messages.splice(index, 1, data)
+        this.text = ''
+        this.id = ''
       } else {
-        //save
+        let data = await this.$store.dispatch('savePost', post)
+        this.messages.push(data)
+        this.text = ''
+
       }
     }
   },

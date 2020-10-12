@@ -25,15 +25,18 @@ export default {
       messages: null
     }
   },
-  mounted() {
-    //get all
+  async mounted() {
+    this.messages = await this.$store.dispatch('fetchPosts')
   },
   methods: {
     editMessage(message) {
       this.message = message
     },
-    deleteMessage(message) {
-     //delete
+    async deleteMessage(message) {
+      let result = await this.$store.dispatch('deletePost', message.id)
+      if(result === 200){
+        this.messages.splice(this.messages.indexOf(message), 1)
+      }
     }
   }
 }
