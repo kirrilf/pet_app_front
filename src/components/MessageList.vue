@@ -6,6 +6,7 @@
                  :message="message"
                  :editMessage="editMessage"
                  :deleteMessage="deleteMessage"
+                 :likeMessage = "likeMessage"
                  :messages="messages"/>
   </div>
 </template>
@@ -37,6 +38,10 @@ export default {
       if(result === 200){
         this.messages.splice(this.messages.indexOf(message), 1)
       }
+    },
+    async likeMessage(post){
+      let result = await this.$store.dispatch('likePost', post.id)
+      this.messages.splice(this.messages.indexOf(post), 1, result)
     }
   }
 }

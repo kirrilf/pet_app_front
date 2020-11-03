@@ -32,7 +32,6 @@ export default {
                 }
 
                 await axios.get(path, config).then(response=>{
-                    status = response.status
                     messages = response.data
 
                 })
@@ -42,7 +41,7 @@ export default {
                 throw e
             }
         },
-        async savePost({dispatch, commit}, post){
+        async savePost({dispatch, commit}, formData){
             try {
 
                 await auth.actions.checkRefreshToken({dispatch, commit});
@@ -51,10 +50,11 @@ export default {
                 let path = "http://localhost:8081/api/posts"
                 let config = {
                     headers: {
-                        "Authorization": "Bearer_"+localStorage.access_token
+                        "Authorization": "Bearer_"+localStorage.access_token,
+                        "Content-Type": "multipart/form-data",
                     }
                 }
-                await axios.post(path, post, config).then(response=>{
+                await axios.post(path, formData, config).then(response=>{
                     message =  response.data
                 })
                 return message
@@ -62,19 +62,23 @@ export default {
                 throw e
             }
         },
-        async updatePost({dispatch, commit}, post){
+        async updatePost({dispatch, commit}, formData){
             try {
                 await auth.actions.checkRefreshToken({dispatch, commit});
                 let message
-                let path = "http://localhost:8081/api/posts/"+post.id
+                let path = "http://localhost:8081/api/posts/"+formData.get("id")
                 let config = {
                     headers: {
-                        "Authorization": "Bearer_"+localStorage.access_token
+                        "Authorization": "Bearer_"+localStorage.access_token,
+                        "Content-Type": "multipart/form-data",
                     }
                 }
-                await axios.put(path, post, config).then(response=>{
+
+
+                await axios.put(path, formData, config).then(response=>{
                     message =  response.data
                 })
+
                 return message
             }catch (e){
                 throw e
@@ -97,6 +101,20 @@ export default {
             }catch (e){
                 throw e
             }
+        },
+        async likePost({dispatch, commit}, id){
+            await auth.actions.checkRefreshToken({dispatch, commit});
+            let path = "http://localhost:8081/api/posts/"+id+"/like"
+            let config = {
+                headers: {
+                    "Authorization": "Bearer_"+localStorage.access_token
+                }
+            }
+            let message
+            await axios.get(path, config).then(response=>{
+                message = response.data
+            })
+            return message
         }
     }
 }

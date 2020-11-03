@@ -1,6 +1,7 @@
 <template>
   <div>
     <input type="text" placeholder="Write something" v-model="text"/>
+    <input type="file" id="file" ref="file" v-on:change="handleFileUpload()"/>
     <input type="button" value="Save" @click="save"/>
   </div>
 </template>
@@ -20,7 +21,7 @@ export default {
   props: ['messages', 'messageAttr'],
   data: () => ({
     text: '',
-    id: ''
+    id: '',
   }),
   watch: {
     messageAttr(newVal) {
@@ -30,20 +31,33 @@ export default {
   },
   methods: {
     async save() {
-      const post = {text: this.text}
+      let formData = new FormData();
+      formData.append('text', this.text)
       if (this.id) {
-        post.id = this.id
-        let data = await this.$store.dispatch('updatePost', post)
+        formData.append('id', this.id)
+        if(this.file != null){
+          formData.append('file', this.file)
+        }
+        let data = await this.$store.dispatch('updatePost', formData)
         const index = getIndex(this.messages, data.id)
         this.messages.splice(index, 1, data)
         this.text = ''
         this.id = ''
+        this.file = ''
       } else {
-        let data = await this.$store.dispatch('savePost', post)
+
+        if(this.file != null){
+          formData.append('file', this.file)
+        }
+
+        let data = await this.$store.dispatch('savePost', formData)
         this.messages.push(data)
         this.text = ''
-
+        this.file = ''
       }
+    },
+    handleFileUpload(){
+      this.file = this.$refs.file.files[0];
     }
   },
 }
