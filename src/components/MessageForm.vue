@@ -1,28 +1,25 @@
 <template>
   <div>
-    <input type="text" placeholder="Write something" v-model="text"/>
-    <input type="file" id="file" ref="file" v-on:change="handleFileUpload()"/>
-    <input type="button" value="Save" @click="save"/>
+    <form @submit.prevent="save">
+      <input type="text" id="text" placeholder="Write something" v-model="text"/>
+      <input type="file" id="file" ref="file" v-on:change="handleFileUpload()"/>
+      <input type="submit" value="Save">
+    </form>
   </div>
 </template>
 
 <script>
-
-function getIndex(list, id) {
-  for (let i = 0; i < list.length; i++) {
-    if (list[i].id === id) {
-      return i
-    }
-  }
-  return -1
-}
+import {mapActions} from 'vuex'
 
 export default {
-  props: ['messages', 'messageAttr'],
-  data: () => ({
-    text: '',
-    id: '',
-  }),
+  props: ['messageAttr'],
+  data() {
+    return {
+      text: '',
+      id: '',
+      file: ''
+    }
+  },
   watch: {
     messageAttr(newVal) {
       this.text = newVal.text
@@ -30,33 +27,24 @@ export default {
     }
   },
   methods: {
+    ...mapActions(['savePost', 'updatePost']),
     async save() {
       let formData = new FormData();
       formData.append('text', this.text)
+      if (this.file != null) {
+        formData.append('file', this.file)
+      }
       if (this.id) {
         formData.append('id', this.id)
-        if(this.file != null){
-          formData.append('file', this.file)
-        }
-        let data = await this.$store.dispatch('updatePost', formData)
-        const index = getIndex(this.messages, data.id)
-        this.messages.splice(index, 1, data)
-        this.text = ''
-        this.id = ''
-        this.file = ''
+        this.updatePost(formData)
       } else {
-
-        if(this.file != null){
-          formData.append('file', this.file)
-        }
-
-        let data = await this.$store.dispatch('savePost', formData)
-        this.messages.push(data)
-        this.text = ''
-        this.file = ''
+        this.savePost(formData)
       }
+      this.text = ''
+      this.id = ''
+      this.file = ''
     },
-    handleFileUpload(){
+    handleFileUpload() {
       this.file = this.$refs.file.files[0];
     }
   },

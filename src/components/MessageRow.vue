@@ -1,33 +1,41 @@
 <template>
   <div>
-    {{ message.text }}
-    Likes: {{message.count}}
-    <span>
-            <input type="button" value="Edit" @click="edit" />
-            <input type="button" value="X" @click="del" />
-            <input type="button" value="Like" @click="like" />
-    </span>
-    <img v-if="message.fileName" :src=imgLink>
+    {{ post.text }} Likes: {{post.count}}
+      <span>
+              <input type="button" value="Edit" @click="edit" />
+              <input type="button" value="X" @click="del" />
+              <input type="button" value="Like" @click="like" />
+      </span>
+      <img v-if="post.fileName" :src=imgLink>
+
+
   </div>
 </template>
 
 <script>
+import {mapActions} from 'vuex'
 export default {
-  props: ['message', 'editMessage', 'deleteMessage', 'messages', 'likeMessage'],
-  data(){
-    return{
-      imgLink:"http://localhost:8081/api/img/"+this.message.fileName
+  props: ['post', 'editPost'],
+  data() {
+    return {
+      imgLink: "http://localhost:8081/api/img/" + this.post.fileName
+    }
+  },
+  watch:{
+    post(){
+      this.imgLink = "http://localhost:8081/api/img/" + this.post.fileName
     }
   },
   methods: {
+    ...mapActions(['deletePost', 'likePost']),
     edit() {
-      this.editMessage(this.message)
+      this.editPost(this.post)
     },
     del() {
-      this.deleteMessage(this.message)
+      this.deletePost(this.post.id)
     },
-    like(){
-      this.likeMessage(this.message)
+    like() {
+      this.likePost(this.post.id)
     }
   }
 }

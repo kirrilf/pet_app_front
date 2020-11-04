@@ -1,6 +1,5 @@
 import axios from 'axios'
-import auth from "@/store/auth";
-import FingerprintJS from '@fingerprintjs/fingerprintjs';
+import auth from "@/store/auth"
 
 async function refreshTokenCheck(status) {
     if (status === 403) {
@@ -12,109 +11,109 @@ async function refreshTokenCheck(status) {
 
 
 export default {
-    actions:{
-        async fetchPosts({dispatch, commit}){
+    mutations: {
+        getPostsMut(state, posts) {
+            state.posts = posts
+        },
+        savePostMut(state, post) {
+            state.posts = [
+                ...state.posts,
+                post
+            ]
+        },
+        updatePostMut(state, post) {
+            const index = state.posts.findIndex(item => item.id === post.id)
+            state.posts = [
+                ...state.posts.slice(0, index),
+                post,
+                ...state.posts.slice(index + 1)
+            ]
+        },
+        deletePostMut(state, id){
+            const index = state.posts.findIndex(item => item.id === id)
+            state.posts = [
+                ...state.posts.slice(0, index),
+                ...state.posts.slice(index + 1)
+            ]
+        }
+    },
+    state: {
+        posts: []
+    },
+    getters: {
+        allPosts(state) {
+            return state.posts
+        },
+    },
+    actions: {
+        async fetchPosts({dispatch, commit}) {
             try {
-
-                //debugger
-
                 await auth.actions.checkRefreshToken({dispatch, commit});
-
-                //debugger
-
-                let messages
-                let status
-                let path = "http://localhost:8081/api/posts"
-                let config = {
+                const res = await axios.get("http://localhost:8081/api/posts", {
                     headers: {
-                        "Authorization": "Bearer_"+localStorage.access_token
+                        "Authorization": "Bearer_" + localStorage.access_token
                     }
-                }
-
-                await axios.get(path, config).then(response=>{
-                    messages = response.data
-
                 })
-
-                return messages
-            }catch (e){
+                const posts = res.data
+                commit('getPostsMut', posts)
+            } catch (e) {
                 throw e
             }
         },
-        async savePost({dispatch, commit}, formData){
+        async savePost({dispatch, commit}, formData) {
             try {
 
                 await auth.actions.checkRefreshToken({dispatch, commit});
-
-                let message
-                let path = "http://localhost:8081/api/posts"
-                let config = {
+                const res = await axios.post("http://localhost:8081/api/posts", formData, {
                     headers: {
-                        "Authorization": "Bearer_"+localStorage.access_token,
+                        "Authorization": "Bearer_" + localStorage.access_token,
                         "Content-Type": "multipart/form-data",
                     }
-                }
-                await axios.post(path, formData, config).then(response=>{
-                    message =  response.data
                 })
-                return message
-            }catch (e){
+                const post = res.data
+                commit('savePostMut', post)
+
+            } catch (e) {
                 throw e
             }
         },
-        async updatePost({dispatch, commit}, formData){
+        async updatePost({dispatch, commit}, formData) {
             try {
                 await auth.actions.checkRefreshToken({dispatch, commit});
-                let message
-                let path = "http://localhost:8081/api/posts/"+formData.get("id")
-                let config = {
+                const res = await axios.put(`http://localhost:8081/api/posts/${formData.get("id")}`, formData, {
                     headers: {
-                        "Authorization": "Bearer_"+localStorage.access_token,
+                        "Authorization": "Bearer_" + localStorage.access_token,
                         "Content-Type": "multipart/form-data",
                     }
-                }
-
-
-                await axios.put(path, formData, config).then(response=>{
-                    message =  response.data
                 })
-
-                return message
-            }catch (e){
+                const post = res.data
+                commit('updatePostMut', post)
+            } catch (e) {
                 throw e
             }
         },
-        async deletePost({dispatch, commit}, id){
+        async deletePost({dispatch, commit}, id) {
             try {
                 await auth.actions.checkRefreshToken({dispatch, commit});
-                let message
-                let path = "http://localhost:8081/api/posts/" + id
-                let config = {
+                const res = await axios.delete(`http://localhost:8081/api/posts/${id}`,  {
                     headers: {
-                        "Authorization": "Bearer_"+localStorage.access_token
+                        "Authorization": "Bearer_" + localStorage.access_token
                     }
-                }
-                await axios.delete(path, config).then(response=>{
-                    message = response.status
                 })
-                return message;
-            }catch (e){
+                commit('deletePostMut', id)
+            } catch (e) {
                 throw e
             }
         },
-        async likePost({dispatch, commit}, id){
+        async likePost({dispatch, commit}, id) {
             await auth.actions.checkRefreshToken({dispatch, commit});
-            let path = "http://localhost:8081/api/posts/"+id+"/like"
-            let config = {
+            const res = await axios.get(`http://localhost:8081/api/posts/${id}/like`, {
                 headers: {
-                    "Authorization": "Bearer_"+localStorage.access_token
+                    "Authorization": "Bearer_" + localStorage.access_token
                 }
-            }
-            let message
-            await axios.get(path, config).then(response=>{
-                message = response.data
             })
-            return message
+            const post = res.data
+            commit('updatePostMut', post)
         }
     }
 }

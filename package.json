@@ -10,6 +10,7 @@
     "@fingerprintjs/fingerprintjs": "^3.0.0",
     "axios": "^0.20.0",
     "core-js": "^3.6.5",
+    "materialize-css": "^1.0.0-rc.2",
     "register-service-worker": "^1.7.1",
     "sass": "^1.27.0",
     "vue": "^3.0.0-0",
