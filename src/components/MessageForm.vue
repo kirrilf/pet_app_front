@@ -7,9 +7,8 @@
         <small id="emailHelp" class="form-text text-muted">Write a caption</small>
       </div>
       <div class="form-group">
-        <input type="file" class="form-control-file" id="fileAdd" ref="file"  v-on:change="handleFileUpload()">
+        <input type="file" id="files" ref="files" accept="image/*"  multiple @change="handleFileUpload"/>
       </div>
-      <img v-bind:src="imagePreview" v-show="showPreview"/>
       <button type="submit" class="btn btn-primary">Submit</button>
     </form>
   </div>
@@ -24,9 +23,9 @@ export default {
     return {
       text: '',
       id: '',
-      file: '',
+      files: [],
       showPreview: false,
-      imagePreview: ''
+      imagePreview: []
     }
   },
   watch: {
@@ -40,33 +39,25 @@ export default {
     async save() {
       let formData = new FormData();
       formData.append('text', this.text)
-      if (this.file != null) {
-        formData.append('file', this.file)
+      for (let i = 0; i < this.files.length; i++) {
+        formData.append('file', this.files[i])
       }
       if (this.id) {
         formData.append('id', this.id)
         this.updatePost(formData)
+        await this.$router.push('/')
       } else {
         this.savePost(formData)
+        await this.$router.push('/')
       }
       this.text = ''
       this.id = ''
-      this.file = ''
+      this.files = []
     },
     handleFileUpload() {
-      this.file = this.$refs.file.files[0];
-      let reader  = new FileReader();
-      reader.addEventListener("load", function () {
-        this.showPreview = true;
-        this.imagePreview = reader.result;
-      }.bind(this), false);
-      if( this.file ){
-        if ( /\.(jpe?g|png|gif)$/i.test( this.file.name ) ) {
-          reader.readAsDataURL( this.file );
-        }
-      }
-    }
-  },
+      this.files = this.$refs.files.files;
+    },
+  }
 }
 </script>
 

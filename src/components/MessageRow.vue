@@ -9,53 +9,25 @@
               <i class="material-icons">more_horiz</i>
             </button>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-              <a class="dropdown-item" @click="edit">Edit</a>
-              <a class="dropdown-item" @click="del">Delete</a>
-              <a class="dropdown-item" href="#">Copy link</a>
-              <a class="dropdown-item" href="#">Report</a>
-              <a class="dropdown-item" href="#">Cancel</a>
+              <button class="dropdown-item btn" @click="edit">Edit</button>
+              <button class="dropdown-item btn" @click="del">Delete</button>
+              <button class="dropdown-item btn">Copy link</button>
+              <button class="dropdown-item btn">Report</button>
+              <button class="dropdown-item btn">Cancel</button>
             </div>
           </div>
         </div>
       </div>
       <div class="card-body">
-
-        <img v-if="post.fileName" :src=imgLink class="rounded mx-auto d-block  w-100" alt="Post image">
+        <img v-if="imgLinks.length === 1" :src=imgLinks[0] class="rounded mx-auto d-block" alt="Post image">
+        <splide :options="options" v-else>
+          <splide-slide v-for="imgLink in imgLinks" :key="imgLink">
+            <img class="rounded mx-auto d-block" :src=imgLink alt="slide">
+          </splide-slide>
+        </splide>
         <div class="m-2">
           <p class="card-text">{{ post.text }}</p>
         </div>
-
-
-        <!--<div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
-          <ol class="carousel-indicators">
-            <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
-            <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
-            <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
-          </ol>
-          <div class="carousel-inner">
-            <div class="carousel-item active">
-              <img class="d-block w-100" src="https://cdn.fishki.net/upload/post/201404/14/1260695/1_lfsxuww.jpg" alt="Первый слайд">
-            </div>
-            <div class="carousel-item">
-              <img class="d-block w-100"  src="https://cdn.fishki.net/upload/post/201404/14/1260695/1_lfsxuww.jpg" alt="Второй слайд">
-            </div>
-            <div class="carousel-item">
-              <img class="d-block w-100" src="https://cdn.fishki.net/upload/post/201404/14/1260695/1_lfsxuww.jpg" alt="Третий слайд">
-            </div>
-          </div>
-          <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="sr-only">Previous</span>
-          </a>
-          <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="sr-only">Next</span>
-          </a>
-        </div>-->
-
-
-
-
       </div>
       <div class="card-footer">
         <div class="row">
@@ -80,17 +52,21 @@
 
 <script>
 import {mapActions} from 'vuex'
-
+import { Splide, SplideSlide } from '@splidejs/vue-splide';
 export default {
   props: ['post', 'editPost'],
   data() {
     return {
-      imgLink: "http://localhost:8081/api/img/" + this.post.fileName
+      imgLinks: this.post.fileNames.map(itm=>"http://localhost:8081/api/img/"+itm)
     }
+  },
+  components: {
+    Splide,
+    SplideSlide,
   },
   watch: {
     post() {
-      this.imgLink = "http://localhost:8081/api/img/" + this.post.fileName
+      this.imgLinks = this.post.fileNames.map(itm=>"http://localhost:8081/api/img/"+itm)
     }
   },
   methods: {
@@ -112,6 +88,12 @@ export default {
 .btn:focus, .btn:active {
   outline: none !important;
   box-shadow: none !important;
+}
+img{
+  width: auto;
+  max-width: 1000px;
+  max-height: 540px;
+  display: block;
 }
 
 </style>

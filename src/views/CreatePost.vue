@@ -1,11 +1,14 @@
 <template>
-  <MessageForm/>
+  <!--<MessageForm/>-->
+
 </template>
 
 
 <script>
 import MessageForm from "@/components/MessageForm";
+
 export default {
-  components: {MessageForm}
+  components: {MessageForm},
+
 }
 </script>

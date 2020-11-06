@@ -2,7 +2,6 @@
   <div class="container mt-5">
     <message-row v-for="post in allPosts"
                  :key="post.id"
-                 :editPost="editPost"
                  :post="post"/>
   </div>
 </template>
