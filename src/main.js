@@ -3,7 +3,9 @@ import App from './App.vue'
 import './registerServiceWorker'
 import router from './router'
 import store from './store'
-import "materialize-css";
-import 'materialize-css/dist/css/materialize.min.css'
+import 'bootstrap/dist/css/bootstrap.css'
+/*import jQuery from 'jquery'
+
+window.$ = window.jQuery = jQuery()*/
 
 createApp(App).use(store).use(router).mount('#app')

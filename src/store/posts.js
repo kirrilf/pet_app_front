@@ -35,15 +35,22 @@ export default {
                 ...state.posts.slice(0, index),
                 ...state.posts.slice(index + 1)
             ]
+        },
+        getOnePostMut(state, post){
+            state.post = post
         }
     },
     state: {
-        posts: []
+        posts: [],
+        post: ''
     },
     getters: {
         allPosts(state) {
             return state.posts
         },
+        getOnePost(state){
+            return state.post
+        }
     },
     actions: {
         async fetchPosts({dispatch, commit}) {
@@ -114,6 +121,16 @@ export default {
             })
             const post = res.data
             commit('updatePostMut', post)
+        },
+        async getPost({dispatch, commit}, id){
+            await auth.actions.checkRefreshToken({dispatch, commit});
+            const res = await axios.get(`http://localhost:8081/api/posts/${id}`, {
+                headers: {
+                    "Authorization": "Bearer_" + localStorage.access_token
+                }
+            })
+            const post = res.data
+            commit('getOnePostMut', post)
         }
     }
 }

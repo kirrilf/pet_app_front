@@ -41,18 +41,15 @@ export default {
             try {
 
 
-
                 let access = localStorage.access_token.substring(21)
                 let paramsToken = JSON.parse(window.atob(access.substring(0, access.indexOf("."))))
 
                 if(paramsToken.exp < new Date().getTime()/1000) {
-                    //debugger
                     let path = 'http://localhost:8081/api/auth/refresh'
 
                     const fp = await FingerprintJS.load()
 
                     const result = await fp.get()
-
                     const visitorId = result.visitorId
 
                     let config = {

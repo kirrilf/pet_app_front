@@ -1,9 +1,16 @@
 <template>
-  <div>
+  <div class="container my-5">
     <form @submit.prevent="save">
-      <input type="text" id="text" placeholder="Write something" v-model="text"/>
-      <input type="file" id="file" ref="file" v-on:change="handleFileUpload()"/>
-      <input type="submit" value="Save">
+      <div class="form-group">
+        <label for="caption">Caption:</label>
+        <input type="text" class="form-control" id="caption" aria-describedby="emailHelp" v-model="text">
+        <small id="emailHelp" class="form-text text-muted">Write a caption</small>
+      </div>
+      <div class="form-group">
+        <input type="file" class="form-control-file" id="fileAdd" ref="file"  v-on:change="handleFileUpload()">
+      </div>
+      <img v-bind:src="imagePreview" v-show="showPreview"/>
+      <button type="submit" class="btn btn-primary">Submit</button>
     </form>
   </div>
 </template>
@@ -17,7 +24,9 @@ export default {
     return {
       text: '',
       id: '',
-      file: ''
+      file: '',
+      showPreview: false,
+      imagePreview: ''
     }
   },
   watch: {
@@ -46,7 +55,25 @@ export default {
     },
     handleFileUpload() {
       this.file = this.$refs.file.files[0];
+      let reader  = new FileReader();
+      reader.addEventListener("load", function () {
+        this.showPreview = true;
+        this.imagePreview = reader.result;
+      }.bind(this), false);
+      if( this.file ){
+        if ( /\.(jpe?g|png|gif)$/i.test( this.file.name ) ) {
+          reader.readAsDataURL( this.file );
+        }
+      }
     }
   },
 }
 </script>
+
+<style>
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+</style>
