@@ -1,7 +1,17 @@
 import axios from 'axios'
-import FingerprintJS from '@fingerprintjs/fingerprintjs';
+import FingerprintJS from '@fingerprintjs/fingerprintjs'
+import user from "@/store/user"
 
 export default {
+    state: {
+
+    },
+    mutations: {
+
+    },
+    getters:{
+
+    },
     actions: {
         async login({dispatch, commit}, {username, password}) {
             try {
@@ -19,10 +29,15 @@ export default {
                     }
                 }
 
-                return await axios.post(path, {username, password}, config).then(response => {
+
+
+                await axios.post(path, {username, password}, config).then(response => {
                     localStorage.setItem("access_token", response.data.access_token)
                     localStorage.setItem("refresh_token", response.data.refresh_token)
+                    localStorage.setItem("authId", response.data.id)
                 })
+
+
             } catch (e) {
                 throw e
             }

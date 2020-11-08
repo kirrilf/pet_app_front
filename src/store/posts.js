@@ -55,7 +55,7 @@ export default {
     actions: {
         async fetchPosts({dispatch, commit}) {
             try {
-                await auth.actions.checkRefreshToken({dispatch, commit});
+                await auth.actions.checkRefreshToken({dispatch, commit})
                 const res = await axios.get("http://localhost:8081/api/posts", {
                     headers: {
                         "Authorization": "Bearer_" + localStorage.access_token
@@ -70,7 +70,7 @@ export default {
         async savePost({dispatch, commit}, formData) {
             try {
 
-                await auth.actions.checkRefreshToken({dispatch, commit});
+                await auth.actions.checkRefreshToken({dispatch, commit})
                 const res = await axios.post("http://localhost:8081/api/posts", formData, {
                     headers: {
                         "Authorization": "Bearer_" + localStorage.access_token,

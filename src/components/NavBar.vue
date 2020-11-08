@@ -15,7 +15,6 @@
             <!--<a class="nav-link" href="/post_create">Create post</a>-->
             <form class="form-inline ml-4">
               <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-              <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
             </form>
           </li>
         </ul>
@@ -42,12 +41,10 @@
         </div>
 
         <div class="nav-items">
-         <!-- <a class="nav-link" href="/login" @click.prevent="logout">
-            <i class="large material-icons">accessibility</i>
-          </a>-->
           <div class="dropdown">
-            <button class="btn" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              <i class="large material-icons">account_circle</i>
+            <button class="btn" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
+                    aria-expanded="false">
+              <img :src=getImgURL(user.userpick) class="ml-3 rounded-circle z-depth-0" alt="avatar image" height="35" width="35" style="border-radius: 50%">
             </button>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
               <a class="dropdown-item" href="#">Profile</a>
@@ -71,19 +68,42 @@
 
 
 <script>
+import {mapGetters, mapActions} from 'vuex'
+
 export default {
+  computed: mapGetters(["getAuthUser"]),
+  data(){
+    return{
+      user:''
+    }
+  },
   methods: {
+    ...mapActions(['getUser']),
     logout() {
       localStorage.clear()
       this.$router.push('/login')
+    },
+    getImgURL(itm) {
+      return "http://localhost:8081/api/img/" + itm
     }
+  },
+  async mounted() {
+    this.user = await this.getUser(localStorage.authId)
   }
+
 }
 </script>
 
-<style>
-i{
-  color: black;
+<style scoped>
+a {
+  color: black; /* Цвет ссылок */
 }
 
+a:visited {
+  color: black; /* Цвет посещенных ссылок */
+}
+
+a:active {
+  color: black; /* Цвет активных ссылок */
+}
 </style>

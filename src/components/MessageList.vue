@@ -19,7 +19,7 @@ export default {
     ...mapActions(["fetchPosts"]),
   },
   async mounted() {
-    this.fetchPosts()
+    await this.fetchPosts()
   },
 }
 </script>
