@@ -1,31 +1,40 @@
 <template>
   <div class="container my-5">
     <form @submit.prevent="save">
+
+      <div  v-if="!messageAttr"  class="input-group mb-3 form-group">
+        <div class="custom-file">
+          <input type="file" id="files"  class="custom-file-input" ref="files" accept="image/*" multiple @change="handleFileUpload"/>
+          <label class="custom-file-label" for="files">Choose file</label>
+        </div>
+      </div>
+
+        <div>
+        <div class="card-columns">
+          <div v-for="(file, key) in files" class="card my-5" style="width: 18rem;">
+            <img class="card-img-top" :src=getURL(file) alt="Card image cap">
+            <div class="card-body">
+              <h5 class="card-title">{{ file.name }}</h5>
+              <a href="#" @click="removeFile(key)" class="btn btn-primary">Remove</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="form-group">
         <label for="caption">Caption:</label>
         <input type="text" class="form-control" id="caption" aria-describedby="emailHelp" v-model="text">
         <small id="emailHelp" class="form-text text-muted">Write a caption</small>
       </div>
-      <div v-if="!messageAttr" class="form-group">
-        <input type="file" id="files" ref="files" accept="image/*" multiple @change="handleFileUpload"/>
-      </div>
-      <div>
-        {{imagePreview}}
-    <!--  <img v-if="imagePreview.length === 1" :src=imagePreview[0] class="rounded mx-auto d-block" alt="Post image">
-      <splide :options="options" v-else-if="imagePreview.length>1">
-        <splide-slide v-for="imgLink in imagePreview" :key="imgLink">
-          <img class="rounded mx-auto d-block" :src=imgLink alt="slide">
-        </splide-slide>
-      </splide>-->
-      </div>
+
       <button type="submit" class="btn btn-primary">Submit</button>
+
     </form>
   </div>
 </template>
 
 <script>
 import {mapActions} from 'vuex'
-import {Splide, SplideSlide} from '@splidejs/vue-splide';
 
 export default {
   props: ['messageAttr'],
@@ -36,10 +45,6 @@ export default {
       files: [],
       imagePreview: []
     }
-  },
-  components: {
-    Splide,
-    SplideSlide,
   },
   watch: {
     messageAttr(newVal) {
@@ -72,6 +77,13 @@ export default {
       upFiles.forEach(itm => this.files.unshift(itm))
       upFiles.forEach(itm => this.imagePreview.unshift(window.URL.createObjectURL(itm)))
     },
+    removeFile(key) {
+      this.imagePreview.splice(key, 1)
+      this.files.splice(key, 1)
+    },
+    getURL(itm) {
+      return window.URL.createObjectURL(itm)
+    }
   }
 }
 </script>
@@ -81,7 +93,8 @@ export default {
   outline: none !important;
   box-shadow: none !important;
 }
-img{
+
+img {
   width: auto;
   max-width: 1000px;
   max-height: 540px;
