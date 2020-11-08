@@ -1,6 +1,5 @@
 <template>
-  <!--<MessageForm/>-->
-
+  <MessageForm/>
 </template>
 
 
@@ -12,3 +11,4 @@ export default {
 
 }
 </script>
+
