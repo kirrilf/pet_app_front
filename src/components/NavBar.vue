@@ -12,12 +12,14 @@
 
         <ul class="navbar-nav mr-auto">
           <li class="nav-item">
-            <!--<a class="nav-link" href="/post_create">Create post</a>-->
             <form class="form-inline ml-4">
               <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
             </form>
           </li>
         </ul>
+
+
+
 
         <div class="nav-items">
           <a class="nav-link" href="/">
@@ -47,15 +49,29 @@
               <img :src=getImgURL(user.userpick) class="ml-3 rounded-circle z-depth-0" alt="avatar image" height="35" width="35" style="border-radius: 50%">
             </button>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-              <a class="dropdown-item" href="#">Profile</a>
-              <a class="dropdown-item" href="/post_create">Create post</a>
-              <a class="dropdown-item" href="#">Saved</a>
-              <a class="dropdown-item" href="#">Settings</a>
-              <a class="dropdown-item" href="#">Switch Accounts</a>
+              <a class="dropdown-item" :href=profileLink>
+                <i class="material-icons icon">account_circle</i> &#160
+                Profile
+              </a>
+              <a class="dropdown-item" href="/post_create">
+                <i class="material-icons icon">create</i> &#160
+                Create post
+              </a>
+              <a class="dropdown-item" href="#">
+                <i class="material-icons icon">turned_in</i> &#160
+                Saved
+              </a>
+              <a class="dropdown-item" href="#">
+                <i class="material-icons icon">settings</i> &#160
+                Settings
+              </a>
+              <a class="dropdown-item" href="#">
+                <i class="material-icons icon">cached</i> &#160
+                Switch Accounts
+              </a>
               <div class="dropdown-divider"></div>
               <a class="dropdown-item" href="/login" @click.prevent="logout">
                 Log out
-                <!--<i class="large material-icons">input</i> -->
               </a>
             </div>
           </div>
@@ -74,7 +90,8 @@ export default {
   computed: mapGetters(["getAuthUser"]),
   data(){
     return{
-      user:''
+      user:'',
+      profileLink: "/profile/"+localStorage.authId
     }
   },
   methods: {
@@ -105,5 +122,11 @@ a:visited {
 
 a:active {
   color: black; /* Цвет активных ссылок */
+}
+
+.icon {
+  position: relative;
+  top: 5px;
+  left: 5px;
 }
 </style>

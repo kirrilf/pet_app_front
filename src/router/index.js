@@ -15,6 +15,12 @@ const routes = [
     component: () => import('../views/CreatePost')
   },
   {
+    path: '/profile/:id',
+    name: 'profile',
+    meta: {auth:true},
+    component: () => import('../views/Profile')
+  },
+  {
     path: '/post_update/:id',
     name: 'post_update',
     meta: {auth:true},

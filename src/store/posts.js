@@ -25,9 +25,9 @@ export default {
             const index = state.posts.findIndex(item => item.id === post.id)
             state.posts = [
                 ...state.posts.slice(0, index),
-                post,
                 ...state.posts.slice(index + 1)
             ]
+            state.posts.unshift(post)
         },
         deletePostMut(state, id){
             const index = state.posts.findIndex(item => item.id === id)
@@ -46,7 +46,7 @@ export default {
     },
     getters: {
         allPosts(state) {
-            return state.posts
+            return state.posts.sort((a, b) => a.updateDate < b.updateDate ? 1 : -1)
         },
         getOnePost(state){
             return state.post
