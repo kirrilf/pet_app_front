@@ -7,8 +7,6 @@ import 'bootstrap/dist/css/bootstrap.css'
 import VueSplide from '@splidejs/vue-splide';
 import '@splidejs/splide/dist/css/themes/splide-default.min.css';
 
-
-
 createApp(App).use(store).use(router).mount('#app')
 
 

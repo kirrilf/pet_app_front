@@ -48,9 +48,18 @@ export default {
         allPosts(state) {
             return state.posts.sort((a, b) => a.updateDate < b.updateDate ? 1 : -1)
         },
+        allUserPosts(state){
+            let size = 3;
+            let posts = []
+            state.posts = state.posts.sort((a, b) => a.updateDate < b.updateDate ? 1 : -1)
+            for (let i = 0; i < Math.ceil(state.posts.length/size); i++){
+                posts[i] = state.posts.slice((i*size), (i*size) + size)
+            }
+            return posts
+        },
         getOnePost(state){
             return state.post
-        }
+        },
     },
     actions: {
         async fetchPosts({dispatch, commit}) {
@@ -131,6 +140,21 @@ export default {
             })
             const post = res.data
             commit('getOnePostMut', post)
+        },
+        async getAllUserPosts({dispatch, commit}, id){
+            try {
+                await auth.actions.checkRefreshToken({dispatch, commit})
+                const res = await axios.get(`http://localhost:8081/api/posts/user/${id}`, {
+                    headers: {
+                        "Authorization": "Bearer_" + localStorage.access_token
+                    }
+                })
+                const posts = res.data
+                commit('getPostsMut', posts)
+            } catch (e) {
+                throw e
+            }
+
         }
     }
 }

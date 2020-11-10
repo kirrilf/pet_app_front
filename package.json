@@ -9,6 +9,7 @@
   "dependencies": {
     "@fingerprintjs/fingerprintjs": "^3.0.0",
     "@fortawesome/fontawesome-free": "^5.15.1",
+    "@kouts/vue-modal": "^2.0.1",
     "@splidejs/vue-splide": "^0.3.5",
     "axios": "^0.20.0",
     "bootstrap": "^4.5.3",

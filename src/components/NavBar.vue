@@ -10,7 +10,7 @@
 
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
 
-        <ul class="navbar-nav mr-auto">
+        <ul class="navbar-nav mr-auto abs">
           <li class="nav-item">
             <form class="form-inline ml-4">
               <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
@@ -84,10 +84,9 @@
 
 
 <script>
-import {mapGetters, mapActions} from 'vuex'
+import {mapActions} from 'vuex'
 
 export default {
-  computed: mapGetters(["getAuthUser"]),
   data(){
     return{
       user:'',
@@ -129,4 +128,5 @@ a:active {
   top: 5px;
   left: 5px;
 }
+
 </style>

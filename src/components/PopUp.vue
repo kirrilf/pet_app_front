@@ -1,11 +1,13 @@
-<template xmlns="http://www.w3.org/1999/html">
-  <div>
-    <div class="card  my-3 center-block">
-      <div class="card-header container">
+<template>
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header justify-content-start">
         <div class="row">
           <img :src=getImgURL(user.userpick) class="ml-3 rounded-circle z-depth-0" alt="avatar image" height="35"
                width="35" style="border-radius: 50%">
-          <h3 class="card-title col align-content-center"><a :href=profileLink>{{ user.username }}</a></h3>
+          <h3 class="card-title col align-content-center">{{ user.username }}</h3>
+        </div>
+        <div class="ml-auto">
           <div class="dropdown">
             <button class="btn" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
                     aria-expanded="false">
@@ -17,7 +19,7 @@
                   <i class="material-icons icon">edit</i> &#160
                   Edit
                 </button>
-                <button class="dropdown-item btn" @click="del">
+                <button class="dropdown-item btn" data-dismiss="modal" aria-label="Close"  @click="del">
                   <i class="material-icons icon">delete</i> &#160
                   Delete
                 </button>
@@ -38,7 +40,7 @@
           </div>
         </div>
       </div>
-      <div class="card-body">
+      <div class="modal-body">
         <img v-if="post.fileNames.length === 1" :src=getImgURL(post.fileNames[0]) class="rounded mx-auto d-block"
              alt="Post image">
         <splide :options="options" v-else>
@@ -50,52 +52,47 @@
           <p class="card-text">{{ post.text }}</p>
         </div>
       </div>
-      <div class="card-footer">
-
-        <div class="d-flex justify-content-between">
-          <div class="p-2">
-            <button class="btn" @click="like">
-              <i v-if="post.meLiked" class="material-icons icon">favorite</i>
-              <i v-else class="material-icons icon">favorite_border</i>
+      <div class="modal-footer justify-content-start">
+        <div class="row">
+          <button class="btn" @click="like">
+            <i v-if="post.meLiked" class="material-icons icon">favorite</i>
+            <i v-else class="material-icons icon">favorite_border</i>
               {{ post.count }}
-            </button>
-            <button class="btn">
-              <i class="material-icons icon">chat_bubble</i>
-            </button>
-            <button class="btn">
-              <i class="material-icons icon">send</i>
-            </button>
-          </div>
-          <div class="p-2"></div>
-          <div class="p-2">
-            <button class="btn">
-              <i class="material-icons icon">turned_in_not</i>
-            </button>
-          </div>
+          </button>
+          <button class="btn">
+            <i class="material-icons icon">chat_bubble</i>
+          </button>
+          <button class="btn">
+            <i class="material-icons icon">send</i>
+          </button>
         </div>
 
-
+        <div class="ml-auto">
+          <button class="btn">
+            <i class="material-icons icon">turned_in_not</i>
+          </button>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import {mapGetters, mapActions} from 'vuex'
-import {Splide, SplideSlide} from '@splidejs/vue-splide';
+
+
+import {Splide, SplideSlide} from "@splidejs/vue-splide";
+import {mapActions} from "vuex";
 
 export default {
-  props: ['post'],
-  computed: mapGetters(["getOneUser"]),
+  props: ['post', 'user'],
   components: {
     Splide,
     SplideSlide,
   },
   data() {
     return {
-      user: '',
-      canEdit: localStorage.authId == this.post.authorId,
-      profileLink: "/profile/"+this.post.authorId
+      canEdit: false,
+      profileLink: ''
     }
   },
   methods: {
@@ -108,17 +105,30 @@ export default {
     },
     like() {
       this.likePost(this.post.id)
+      if (this.post.meLiked) {
+        this.post.count--
+        this.post.meLiked = false
+      } else {
+        this.post.count++
+        this.post.meLiked = true
+      }
+
     },
     getImgURL(itm) {
       return "http://localhost:8081/api/img/" + itm
     }
   },
-  async mounted() {
-    this.user = await this.$store.dispatch('getUser', this.post.authorId)
+  mounted() {
+    this.canEdit = localStorage.authId == this.post.authorId
+    this.profileLink = "/profile/" + this.post.authorId
+  },
+  destroyed() {
+    this.$emit('destroyPopUp')
   }
+
+
 }
 </script>
-
 
 <style scoped>
 .btn:focus, .btn:active {
@@ -128,28 +138,8 @@ export default {
 
 img {
   width: auto;
-  max-width: 1000px;
+  max-width: 767px;
   max-height: 540px;
   display: block;
 }
-
-a {
-  color: black; /* Цвет ссылок */
-}
-
-a:visited {
-  color: black; /* Цвет посещенных ссылок */
-}
-
-a:active {
-  color: black; /* Цвет активных ссылок */
-}
-
-.icon {
-  position: relative;
-  top: 5px;
-  left: 5px;
-}
-
-
 </style>
