@@ -15,6 +15,20 @@ export default {
         getPostsMut(state, posts) {
             state.posts = posts
         },
+        addPostsPageMut(state, posts){
+            const targetPosts = state.posts.concat(posts).reduce((res, val) => {
+                res[val.id] = val
+                return res
+            }, {})
+            state.posts = Object.values(targetPosts)
+            /*state.posts = posts*/
+        },
+        updateCurrentPageMut(state, currentPage){
+            state.currentPage = currentPage
+        },
+        updateTotalPageMut(state, totalPage){
+            state.totalPage = totalPage
+        },
         savePostMut(state, post) {
             state.posts = [
                 ...state.posts,
@@ -42,7 +56,9 @@ export default {
     },
     state: {
         posts: [],
-        post: ''
+        post: '',
+        currentPage: -1,
+        totalPage:0
     },
     getters: {
         allPosts(state) {
@@ -62,16 +78,22 @@ export default {
         },
     },
     actions: {
-        async fetchPosts({dispatch, commit}) {
+        async fetchPosts({dispatch, commit, state}) {
             try {
                 await auth.actions.checkRefreshToken({dispatch, commit})
                 const res = await axios.get("http://localhost:8081/api/posts", {
                     headers: {
                         "Authorization": "Bearer_" + localStorage.access_token
+                    },
+                    params: {
+                        page: state.currentPage+1
                     }
                 })
-                const posts = res.data
-                commit('getPostsMut', posts)
+                const data = res.data
+                /*commit('getPostsMut', posts)*/
+                commit('addPostsPageMut', data.posts)
+                commit('updateTotalPageMut', data.totalPage)
+                commit('updateCurrentPageMut', Math.min(data.currentPage, data.totalPage))
             } catch (e) {
                 throw e
             }
@@ -80,6 +102,7 @@ export default {
             try {
 
                 await auth.actions.checkRefreshToken({dispatch, commit})
+
                 const res = await axios.post("http://localhost:8081/api/posts", formData, {
                     headers: {
                         "Authorization": "Bearer_" + localStorage.access_token,
@@ -99,7 +122,7 @@ export default {
                 const res = await axios.put(`http://localhost:8081/api/posts/${formData.get("id")}`, formData, {
                     headers: {
                         "Authorization": "Bearer_" + localStorage.access_token,
-                        "Content-Type": "multipart/form-data",
+                            "Content-Type": "multipart/form-data",
                     }
                 })
                 const post = res.data

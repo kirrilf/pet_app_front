@@ -53,6 +53,7 @@
         </div>
       </div>
       <div class="modal-footer justify-content-start">
+
         <div class="row">
           <button class="btn" @click="like">
             <i v-if="post.meLiked" class="material-icons icon">favorite</i>
@@ -72,7 +73,54 @@
             <i class="material-icons icon">turned_in_not</i>
           </button>
         </div>
+
+
+
+        <div class="m-2 container">
+          <p class="card-text"><b>{{ user.username }}</b> {{ post.text }}</p>
+        </div>
+
+        <div class="container">
+          <div v-if="this.commentUsers.length > 0" class="my-2">
+            <i>View all comments</i>
+          </div>
+          <div v-for="(userI, index) in this.commentUsers">
+            <div class="row my-1">
+              <img :src=getImgURL(userI.userpick) class="ml-3 rounded-circle z-depth-0" alt="avatar image" height="35"
+                   width="35" style="border-radius: 50%">
+              <div class="my-1 mx-2">
+                <b>{{ userI.username }}</b> {{ this.post.firstComments[index].text }}
+              </div>
+            </div>
+          </div>
+        </div>
+        <hr>
+
+
+        <form @submit.prevent="save">
+          <div class="row-fluid">
+            <div class="form-group">
+              <div class="input-group">
+                <input id="comment" type="text" class="form-control" placeholder="Add a comment" v-model="commentText">
+                <button type="submit" class="btn btn-primary">Post</button>
+              </div>
+            </div>
+          </div>
+        </form>
+
+
+
+
+
+
+
+
+
+
       </div>
+
+
+
     </div>
   </div>
 </template>
@@ -92,7 +140,8 @@ export default {
   data() {
     return {
       canEdit: false,
-      profileLink: ''
+      profileLink: '',
+      commentUsers: [],
     }
   },
   methods: {
@@ -114,13 +163,37 @@ export default {
       }
 
     },
+    save(){
+      let comment = {
+        authorId: this.user.id,
+        text: this.commentText,
+        updateDate: new Date().getTime() / 1000
+      }
+      if(this.commentUsers.length > 2) {
+        this.commentUsers.shift()
+        this.commentUsers.push(this.user)
+        this.post.firstComments.shift()
+        this.post.firstComments.push(comment)
+      }else {
+        this.commentUsers.push(this.user)
+        this.post.firstComments.push(comment)
+      }
+      const data = {
+        comment, id:this.post.id
+      }
+      this.saveComment(data)
+      this.commentText = ''
+    },
     getImgURL(itm) {
       return "http://localhost:8081/api/img/" + itm
     }
   },
-  mounted() {
+ async mounted() {
     this.canEdit = localStorage.authId == this.post.authorId
     this.profileLink = "/profile/" + this.post.authorId
+    for (let i = 0; i < this.post.firstComments.length; i++) {
+      this.commentUsers.push(await this.getUser(this.post.firstComments[i].authorId))
+    }
   },
   destroyed() {
     this.$emit('destroyPopUp')

@@ -4,7 +4,7 @@
     <ul class="nav justify-content-center">
       <li class="nav-item">
         <button class="btn" @click="changeView">
-          <i v-if="cardsOrPanel" class="material-icons icon">apps</i>
+          <i v-if="cardsOrPanel" class="material-icons icon">grid_on</i>
           <i v-else class="material-icons icon">view_day</i>
         </button>
       </li>
@@ -12,7 +12,7 @@
 
 
     <div v-if="!cardsOrPanel">
-      <div class="container my-5">
+      <div class="container my-5 center-block">
         <div v-for="threePost in allUserPosts" class="card-deck mb-5">
           <div v-for="post in threePost" class="card card-img">
             <a @click="popUp(post)" data-toggle="modal" data-target="#staticBackdrop">
@@ -26,7 +26,7 @@
         <PopUp v-if="showPopUp" :post="post" :user="user" @destroyPopUp="destroyPopUp"/>
       </div>
     </div>
-    <div v-else>
+    <div v-if="cardsOrPanel">
       <div class="container mt-5">
         <message-row v-for="post in allPosts"
                      :key="post.id"
@@ -87,8 +87,21 @@ export default {
 <style scoped>
 
 .card-img {
-  max-height: 11.385em;
-  max-width: 21.750em;
+  width: 293px;
+  height: 293px;
+  max-width: 293px;
+  max-height: 293px;
+}
+img{
+  max-width: 293px;
+  max-height: 293px;
+  width: auto;
+  height: auto;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  vertical-align: middle;
+
 }
 
 a {

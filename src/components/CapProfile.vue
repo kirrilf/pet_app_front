@@ -49,7 +49,7 @@
       <div class="mt-5 p-2">
         <div class="row">
           <h2 class="mr-3">{{ user.username }}</h2>
-          <button type="button" class="btn btn-light mr-2">
+          <button type="button" class="btn mr-2">
             <i class="material-icons">settings</i>
           </button>
 
@@ -106,6 +106,11 @@ export default {
   top: 4em;
   left: 13em;
 }
+.btn:focus, .btn:active {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
 
 .icon {
   position: relative;

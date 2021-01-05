@@ -18,6 +18,7 @@ export default {
                         "Authorization": "Bearer_" + localStorage.access_token
                     }
                 })
+
                 return res.data
             }catch (e){
                 throw e

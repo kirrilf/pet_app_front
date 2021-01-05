@@ -1,6 +1,6 @@
 <template xmlns="http://www.w3.org/1999/html">
   <div>
-    <div class="card  my-3 center-block">
+    <div class="card  my-5 center-block">
       <div class="card-header container">
         <div class="row">
           <img :src=getImgURL(user.userpick) class="ml-3 rounded-circle z-depth-0" alt="avatar image" height="35"
@@ -46,9 +46,7 @@
             <img class="rounded mx-auto d-block" :src=getImgURL(imgLink) alt="slide">
           </splide-slide>
         </splide>
-        <div class="m-2">
-          <p class="card-text">{{ post.text }}</p>
-        </div>
+
       </div>
       <div class="card-footer">
 
@@ -74,6 +72,38 @@
           </div>
         </div>
 
+        <div class="m-2 container">
+          <p class="card-text"><b>{{ user.username }}</b> {{ post.text }}</p>
+        </div>
+
+        <div class="container">
+          <div v-if="this.commentUsers.length > 0" class="my-2">
+            <i>View all comments</i>
+          </div>
+          <div v-for="(userI, index) in this.commentUsers">
+            <div class="row my-1">
+              <img :src=getImgURL(userI.userpick) class="ml-3 rounded-circle z-depth-0" alt="avatar image" height="35"
+                   width="35" style="border-radius: 50%">
+              <div class="my-1 mx-2">
+                <b>{{ userI.username }}</b> {{ this.post.firstComments[index].text }}
+              </div>
+            </div>
+          </div>
+        </div>
+        <hr>
+
+
+        <form @submit.prevent="save">
+          <div class="row-fluid">
+            <div class="form-group">
+              <div class="input-group">
+                <input id="comment" type="text" class="form-control" placeholder="Add a comment" v-model="commentText">
+                <button type="submit" class="btn btn-primary">Post</button>
+              </div>
+            </div>
+          </div>
+        </form>
+
 
       </div>
     </div>
@@ -84,6 +114,7 @@
 import {mapGetters, mapActions} from 'vuex'
 import {Splide, SplideSlide} from '@splidejs/vue-splide';
 
+
 export default {
   props: ['post'],
   computed: mapGetters(["getOneUser"]),
@@ -93,13 +124,18 @@ export default {
   },
   data() {
     return {
+      options: {
+        rewind: true,
+      },
+      commentUsers: [],
       user: '',
+      commentText:'',
       canEdit: localStorage.authId == this.post.authorId,
-      profileLink: "/profile/"+this.post.authorId
+      profileLink: "/profile/" + this.post.authorId
     }
   },
   methods: {
-    ...mapActions(['deletePost', 'likePost']),
+    ...mapActions(['deletePost', 'likePost', 'getUser', 'saveComment']),
     edit() {
       this.$router.push('/post_update/' + this.post.id)
     },
@@ -111,10 +147,35 @@ export default {
     },
     getImgURL(itm) {
       return "http://localhost:8081/api/img/" + itm
+    },
+    save(){
+      let comment = {
+        authorId: this.user.id,
+        text: this.commentText,
+        updateDate: new Date().getTime() / 1000
+      }
+      if(this.commentUsers.length > 2) {
+        this.commentUsers.shift()
+        this.commentUsers.push(this.user)
+        this.post.firstComments.shift()
+        this.post.firstComments.push(comment)
+      }else {
+        this.commentUsers.push(this.user)
+        this.post.firstComments.push(comment)
+      }
+      const data = {
+        comment, id:this.post.id
+      }
+      this.saveComment(data)
+      this.commentText = ''
+
     }
   },
   async mounted() {
     this.user = await this.$store.dispatch('getUser', this.post.authorId)
+    for (let i = 0; i < this.post.firstComments.length; i++) {
+      this.commentUsers.push(await this.getUser(this.post.firstComments[i].authorId))
+    }
   }
 }
 </script>

@@ -10,15 +10,20 @@
     <message-row v-for="post in allPosts"
                  :key="post.id"
                  :post="post"/>
+    <lazy-loader/>
+
   </div>
 </template>
 
 <script>
-import MessageRow from './MessageRow'
+import
+  MessageRow from './MessageRow'
 import {mapGetters, mapActions} from 'vuex'
+import LazyLoader from "@/components/LazyLoader";
 
 export default {
   components: {
+    LazyLoader,
     MessageRow,
   },
   data(){
